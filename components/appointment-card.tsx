@@ -15,6 +15,19 @@ export interface Category {
   description: string;
 }
 
+export interface Patient {
+  id: string;
+  email: string;
+  active: boolean;
+  pronoun: string;
+  lastname: string;
+  firstname: string;
+  birth_date: string;
+  care_level: number;
+  created_at: string;
+  active_since: string;
+}
+
 export interface Appointment {
   id: string;
   created_at: string;
@@ -22,7 +35,7 @@ export interface Appointment {
   start: string;
   end: string;
   location: string;
-  patient: string;
+  patient: Patient;
   attachments: any[];
   category: Category;
   notes: string;

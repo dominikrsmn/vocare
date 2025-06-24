@@ -11,7 +11,8 @@ export async function getAppointments() {
     .from("appointments")
     .select(`
       *,
-      category:category(*)
+      category:category(*),
+      patient:patient(*)
     `)
     .gte('start', today)
     .order('start', { ascending: true });
@@ -30,7 +31,8 @@ export async function getPastAppointments(beforeDate: string, limit: number = 5)
     .from("appointments")
     .select(`
       *,
-      category:category(*)
+      category:category(*),
+      patient:patient(*)
     `)
     .lt('start', beforeDate)
     .order('start', { ascending: false })

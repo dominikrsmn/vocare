@@ -54,7 +54,7 @@ function isToday(dateString: string) {
 
 export function AppointmentsList() {
   const { 
-    appointments, 
+    filteredAppointments, 
     isLoading, 
     loadingPast, 
     loadPastAppointments 
@@ -62,8 +62,8 @@ export function AppointmentsList() {
 
   // Berechne das früheste Datum für den Button
   const getEarliestDate = () => {
-    if (appointments.length === 0) return null;
-    const sortedAppointments = [...appointments].sort((a, b) => 
+    if (filteredAppointments.length === 0) return null;
+    const sortedAppointments = [...filteredAppointments].sort((a: Appointment, b: Appointment) => 
       new Date(a.start).getTime() - new Date(b.start).getTime()
     );
     return new Date(sortedAppointments[0].start).toLocaleDateString("de-DE", {
@@ -84,7 +84,7 @@ export function AppointmentsList() {
   }
 
   // Sortiere appointments nach Startzeit
-  const sortedAppointments = appointments.sort((a, b) => 
+  const sortedAppointments = filteredAppointments.sort((a: Appointment, b: Appointment) => 
     new Date(a.start).getTime() - new Date(b.start).getTime()
   );
   

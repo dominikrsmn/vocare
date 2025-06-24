@@ -5,7 +5,9 @@ import { useRouter, usePathname } from "next/navigation"
 import { FilterIcon, PlusIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import DatePicker from "@/components/date-picker"
+import { FilterMenu } from "@/components/filter-menu"
 
 export default function Navigation() {
   const router = useRouter()
@@ -14,6 +16,7 @@ export default function Navigation() {
   // Always start with default value to avoid hydration mismatch
   const [activeView, setActiveView] = React.useState("liste")
   const [mounted, setMounted] = React.useState(false)
+  const [filterOpen, setFilterOpen] = React.useState(false)
 
   // Handle initial mount and localStorage
   React.useEffect(() => {
@@ -64,10 +67,7 @@ export default function Navigation() {
 
         {/* Right side - Action Buttons */}
         <div className="flex items-center gap-3">
-          <Button variant="outline" size="sm" className="text-sm">
-            <FilterIcon className="mr-2 h-4 w-4" />
-            Termine filtern
-          </Button>
+          <div className="h-9 w-32 bg-muted rounded-lg animate-pulse" />
           <Button size="sm" className="text-sm">
             <PlusIcon className="mr-2 h-4 w-4" />
             Neuer Termin
@@ -101,10 +101,17 @@ export default function Navigation() {
 
       {/* Right side - Action Buttons */}
       <div className="flex items-center gap-3">
-        <Button variant="outline" size="sm" className="text-sm">
-          <FilterIcon className="mr-2 h-4 w-4" />
-          Termine filtern
-        </Button>
+        <Popover open={filterOpen} onOpenChange={setFilterOpen}>
+          <PopoverTrigger asChild>
+            <Button variant="outline" size="sm" className="text-sm">
+              <FilterIcon className="mr-2 h-4 w-4" />
+              Termine filtern
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent align="end" className="p-0">
+            <FilterMenu onClose={() => setFilterOpen(false)} />
+          </PopoverContent>
+        </Popover>
         <Button size="sm" className="text-sm">
           <PlusIcon className="mr-2 h-4 w-4" />
           Neuer Termin

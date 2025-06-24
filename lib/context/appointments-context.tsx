@@ -3,15 +3,29 @@ import { createContext, useContext, useState, useEffect, ReactNode } from "react
 import { getAppointments, getPastAppointments } from "@/lib/supabase/actions/appointments";
 import { Appointment } from "@/components/appointment-card";
 
+interface AppointmentFilters {
+  categories: string[];
+  dateRange: {
+    start: string | null;
+    end: string | null;
+  };
+  searchTerm: string;
+}
+
 interface AppointmentsContextType {
   appointments: Appointment[];
+  filteredAppointments: Appointment[];
   isLoading: boolean;
   loadingPast: boolean;
+  filters: AppointmentFilters;
   loadPastAppointments: () => Promise<void>;
   refreshAppointments: () => Promise<void>;
   addAppointment: (appointment: Appointment) => void;
   updateAppointment: (id: string, updatedAppointment: Partial<Appointment>) => void;
   removeAppointment: (id: string) => void;
+  setFilters: (filters: Partial<AppointmentFilters>) => void;
+  clearFilters: () => void;
+  getAvailableCategories: () => { id: string; label: string; icon: string; color: string }[];
 }
 
 const AppointmentsContext = createContext<AppointmentsContextType | undefined>(undefined);
@@ -20,10 +34,17 @@ interface AppointmentsProviderProps {
   children: ReactNode;
 }
 
+const defaultFilters: AppointmentFilters = {
+  categories: [],
+  dateRange: { start: null, end: null },
+  searchTerm: ""
+};
+
 export function AppointmentsProvider({ children }: AppointmentsProviderProps) {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [loadingPast, setLoadingPast] = useState(false);
+  const [filters, setFiltersState] = useState<AppointmentFilters>(defaultFilters);
 
   // Initiales Laden der Termine
   useEffect(() => {
@@ -90,15 +111,92 @@ export function AppointmentsProvider({ children }: AppointmentsProviderProps) {
     setAppointments(prev => prev.filter(appointment => appointment.id !== id));
   };
 
+  // Filter Termine basierend auf aktuellen Filtern
+  const filteredAppointments = appointments.filter(appointment => {
+    // Kategorie Filter
+    if (filters.categories.length > 0 && !filters.categories.includes(appointment.category.id)) {
+      return false;
+    }
+
+    // Datum Filter
+    if (filters.dateRange.start || filters.dateRange.end) {
+      const appointmentDate = new Date(appointment.start);
+      
+      // Start-Datum: ab 00:00:00 des gewählten Tages
+      if (filters.dateRange.start) {
+        const startDate = new Date(filters.dateRange.start);
+        startDate.setHours(0, 0, 0, 0);
+        if (appointmentDate < startDate) {
+          return false;
+        }
+      }
+      
+      // End-Datum: bis 23:59:59 des gewählten Tages (inklusiv)
+      if (filters.dateRange.end) {
+        const endDate = new Date(filters.dateRange.end);
+        endDate.setHours(23, 59, 59, 999);
+        if (appointmentDate > endDate) {
+          return false;
+        }
+      }
+    }
+
+    // Suchterm Filter (Titel, Notizen, Ort, Patient)
+    if (filters.searchTerm) {
+      const searchLower = filters.searchTerm.toLowerCase();
+      const titleMatch = appointment.title.toLowerCase().includes(searchLower);
+      const notesMatch = appointment.notes?.toLowerCase().includes(searchLower) || false;
+      const locationMatch = appointment.location.toLowerCase().includes(searchLower);
+      const patientFirstnameMatch = appointment.patient.firstname.toLowerCase().includes(searchLower);
+      const patientLastnameMatch = appointment.patient.lastname.toLowerCase().includes(searchLower);
+      const patientFullnameMatch = `${appointment.patient.firstname} ${appointment.patient.lastname}`.toLowerCase().includes(searchLower);
+      
+      if (!titleMatch && !notesMatch && !locationMatch && !patientFirstnameMatch && !patientLastnameMatch && !patientFullnameMatch) {
+        return false;
+      }
+    }
+
+    return true;
+  });
+
+  // Filter setzen
+  const setFilters = (newFilters: Partial<AppointmentFilters>) => {
+    setFiltersState(prev => ({ ...prev, ...newFilters }));
+  };
+
+  // Filter zurücksetzen
+  const clearFilters = () => {
+    setFiltersState(defaultFilters);
+  };
+
+  // Verfügbare Kategorien ermitteln
+  const getAvailableCategories = () => {
+    const categories = appointments.map(app => app.category);
+    const uniqueCategories = categories.filter((category, index, self) => 
+      index === self.findIndex(c => c.id === category.id)
+    );
+    return uniqueCategories.map(cat => ({
+      id: cat.id,
+      label: cat.label,
+      icon: cat.icon,
+      color: cat.color
+    }));
+  };
+
   const value = {
     appointments,
+    filteredAppointments,
     isLoading,
     loadingPast,
+    filters,
     loadPastAppointments,
     refreshAppointments,
     addAppointment,
     updateAppointment,
     removeAppointment,
+    setFilters,
+    clearFilters,
+    getAvailableCategories,
   };
 
   return (
