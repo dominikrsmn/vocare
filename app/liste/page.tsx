@@ -1,3 +1,6 @@
+
+import { AppointmentsList } from "@/components/appointments-list";
+
 export default function Liste() {
-    return <div>Liste</div>;
-  }
+  return <AppointmentsList />;
+}
