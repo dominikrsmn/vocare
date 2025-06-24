@@ -51,7 +51,7 @@ export default function Navigation() {
   // Don't render tabs until mounted to avoid hydration issues
   if (!mounted) {
     return (
-      <div className="flex items-center justify-between w-full border-b bg-background px-6 py-3">
+      <div className="flex items-center justify-between w-full border-b bg-card px-6 py-3">
         {/* Left side - Date Picker */}
         <div className="flex items-center gap-5">
           <DatePicker />
@@ -78,7 +78,7 @@ export default function Navigation() {
   }
 
   return (
-    <div className="flex items-center justify-between w-full border-b bg-background px-6 py-3">
+    <div className="flex items-center justify-between w-full border-b bg-card px-6 py-3 shadow-sm">
       {/* Left side - Date Picker */}
       <div className="flex items-center gap-5">
         <DatePicker />
