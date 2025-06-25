@@ -4,6 +4,8 @@ import { Badge } from "./ui/badge";
 import { Checkbox } from "./ui/checkbox";
 import { AppointmentDetails } from "./appointment-details";
 import { AppointmentHoverCard } from "./appointment-hover-card";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "./ui/hover-card";
+import { AlertTriangle } from "lucide-react";
 import { useState } from "react";
 
 export interface Category {
@@ -60,7 +62,8 @@ export function AppointmentCard({ appointment }: AppointmentCardProps) {
     minute: "2-digit",
   });
 
-
+  // Prüfe, ob Startzeit später als Endzeit ist
+  const isInvalidTimeRange = new Date(appointment.start) > new Date(appointment.end);
 
   return (
     <AppointmentHoverCard appointment={appointment}>
@@ -76,9 +79,29 @@ export function AppointmentCard({ appointment }: AppointmentCardProps) {
             </span>
           </div>
           <div className="flex-1 min-w-0">
-            <h3 className={`font-semibold text-gray-900 text-lg leading-tight mb-1 ${isCompleted ? 'line-through text-gray-500' : ''}`}>
-              {appointment.title}
-            </h3>
+            <div className="flex items-center gap-2 mb-1">
+              <h3 className={`font-semibold text-gray-900 text-lg leading-tight ${isCompleted ? 'line-through text-gray-500' : ''}`}>
+                {appointment.title}
+              </h3>
+              {isInvalidTimeRange && (
+                <HoverCard>
+                  <HoverCardTrigger asChild>
+                    <Badge variant="destructive" className="flex items-center gap-1 cursor-help">
+                      <AlertTriangle size={12} />
+                    </Badge>
+                  </HoverCardTrigger>
+                  <HoverCardContent>
+                    <div className="text-sm">
+                      <p className="font-semibold text-red-600 mb-1">Ungültiger Zeitraum</p>
+                      <p className="text-gray-600">
+                        Das Startdatum ({startTime}) liegt nach dem Enddatum ({endTime}). 
+                        Bitte überprüfen Sie die Zeiten.
+                      </p>
+                    </div>
+                  </HoverCardContent>
+                </HoverCard>
+              )}
+            </div>
             <Badge 
               variant="secondary" 
               className="text-xs"
@@ -100,7 +123,7 @@ export function AppointmentCard({ appointment }: AppointmentCardProps) {
           </div>
         </div>
 
-            <AppointmentDetails
+        <AppointmentDetails
           startTime={startTime}
           endTime={endTime}
           location={appointment.location}
