@@ -8,6 +8,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import DatePicker from "@/components/date-picker"
 import { FilterMenu } from "@/components/filter-menu"
+import { CreateAppointmentForm } from "@/components/create-appointment-form"
 
 export default function Navigation() {
   const router = useRouter()
@@ -17,6 +18,7 @@ export default function Navigation() {
   const [activeView, setActiveView] = React.useState("liste")
   const [mounted, setMounted] = React.useState(false)
   const [filterOpen, setFilterOpen] = React.useState(false)
+  const [createFormOpen, setCreateFormOpen] = React.useState(false)
 
   // Handle initial mount and localStorage
   React.useEffect(() => {
@@ -68,10 +70,17 @@ export default function Navigation() {
         {/* Right side - Action Buttons */}
         <div className="flex items-center gap-3">
           <div className="h-9 w-32 bg-muted rounded-lg animate-pulse" />
-          <Button size="sm" className="text-sm">
-            <PlusIcon className="mr-2 h-4 w-4" />
-            Neuer Termin
-          </Button>
+          <Popover open={createFormOpen} onOpenChange={setCreateFormOpen}>
+            <PopoverTrigger asChild>
+              <Button size="sm" className="text-sm">
+                <PlusIcon className="mr-2 h-4 w-4" />
+                Neuer Termin
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent align="end" className="p-0 w-96">
+              <CreateAppointmentForm onClose={() => setCreateFormOpen(false)} />
+            </PopoverContent>
+          </Popover>
         </div>
       </div>
     )
@@ -112,10 +121,18 @@ export default function Navigation() {
             <FilterMenu onClose={() => setFilterOpen(false)} />
           </PopoverContent>
         </Popover>
-        <Button size="sm" className="text-sm">
-          <PlusIcon className="mr-2 h-4 w-4" />
-          Neuer Termin
-        </Button>
+        
+        <Popover open={createFormOpen} onOpenChange={setCreateFormOpen}>
+          <PopoverTrigger asChild>
+            <Button size="sm" className="text-sm">
+              <PlusIcon className="mr-2 h-4 w-4" />
+              Neuer Termin
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent align="end" className="p-0 w-96">
+            <CreateAppointmentForm onClose={() => setCreateFormOpen(false)} />
+          </PopoverContent>
+        </Popover>
       </div>
     </div>
   )
