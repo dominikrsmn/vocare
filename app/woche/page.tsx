@@ -1,13 +1,13 @@
 "use client";
 import { useAppointments } from "@/lib/context/appointments-context";
 import { AppointmentCard } from "@/components/appointment-card";
+import { AppointmentHoverCard } from "@/components/appointment-hover-card";
 import { useState, useMemo, useEffect } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
+
+
 
 export default function Woche() {
-  const { filteredAppointments, isLoading } = useAppointments();
-  const [currentWeek, setCurrentWeek] = useState(new Date());
+  const { filteredAppointments, isLoading, selectedDate } = useAppointments();
   const [currentTime, setCurrentTime] = useState(new Date());
 
   // Wochenbeginn (Montag) berechnen
@@ -20,7 +20,7 @@ export default function Woche() {
 
   // Wochentage generieren
   const weekDays = useMemo(() => {
-    const start = getWeekStart(currentWeek);
+    const start = getWeekStart(selectedDate);
     const days = [];
     for (let i = 0; i < 7; i++) {
       const day = new Date(start);
@@ -28,7 +28,7 @@ export default function Woche() {
       days.push(day);
     }
     return days;
-  }, [currentWeek]);
+  }, [selectedDate]);
 
   // Zeitslots generieren (6:00 - 20:00)
   const timeSlots = useMemo(() => {
@@ -72,11 +72,7 @@ export default function Woche() {
     };
   };
 
-  const navigateWeek = (direction: 'prev' | 'next') => {
-    const newWeek = new Date(currentWeek);
-    newWeek.setDate(currentWeek.getDate() + (direction === 'next' ? 7 : -7));
-    setCurrentWeek(newWeek);
-  };
+
 
   const isToday = (date: Date) => {
     const today = new Date();
@@ -126,23 +122,12 @@ export default function Woche() {
 
   return (
     <div className="container mx-auto px-4 py-6 max-w-full">
-      {/* Wochennavigation */}
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-4">
-          <Button variant="outline" size="sm" onClick={() => navigateWeek('prev')}>
-            <ChevronLeft className="h-4 w-4" />
-          </Button>
-          <h1 className="text-2xl font-semibold">
-            {weekDays[0]?.toLocaleDateString('de-DE', { day: 'numeric', month: 'long' })} - {' '}
-            {weekDays[6]?.toLocaleDateString('de-DE', { day: 'numeric', month: 'long', year: 'numeric' })}
-          </h1>
-          <Button variant="outline" size="sm" onClick={() => navigateWeek('next')}>
-            <ChevronRight className="h-4 w-4" />
-          </Button>
-        </div>
-        <Button variant="outline" onClick={() => setCurrentWeek(new Date())}>
-          Heute
-        </Button>
+      {/* Wochenüberschrift */}
+      <div className="flex items-center justify-center mb-6">
+        <h1 className="text-2xl font-semibold">
+          {weekDays[0]?.toLocaleDateString('de-DE', { day: 'numeric', month: 'long' })} - {' '}
+          {weekDays[6]?.toLocaleDateString('de-DE', { day: 'numeric', month: 'long', year: 'numeric' })}
+        </h1>
       </div>
 
       {/* Kalender Grid */}
@@ -230,38 +215,40 @@ export default function Woche() {
                           height: `${position.height}rem`,
                         }}
                       >
-                        <div className="h-full p-1">
-                          <div
-                            className="h-full rounded p-2 text-xs overflow-hidden shadow-sm border-l-4"
-                            style={{
-                              backgroundColor: `${appointment.category.color}15`,
-                              borderColor: appointment.category.color,
-                            }}
-                          >
-                            <div className="font-medium text-gray-900 truncate mb-1">
-                              {appointment.title}
-                            </div>
-                            <div className="text-gray-600 text-[10px] space-y-0.5">
-                              <div className="flex items-center gap-1">
-                                <span>{appointment.category.icon}</span>
-                                <span className="truncate">{appointment.category.label}</span>
+                        <AppointmentHoverCard appointment={appointment}>
+                          <div className="h-full p-1 cursor-pointer">
+                            <div
+                              className="h-full rounded p-2 text-xs overflow-hidden shadow-sm border-l-4 hover:shadow-md transition-shadow"
+                              style={{
+                                backgroundColor: `${appointment.category.color}15`,
+                                borderColor: appointment.category.color,
+                              }}
+                            >
+                              <div className="font-medium text-gray-900 truncate mb-1">
+                                {appointment.title}
                               </div>
-                              <div className="truncate">
-                                {new Date(appointment.start).toLocaleTimeString('de-DE', {
-                                  hour: '2-digit',
-                                  minute: '2-digit'
-                                })} - {new Date(appointment.end).toLocaleTimeString('de-DE', {
-                                  hour: '2-digit',
-                                  minute: '2-digit'
-                                })}
-                              </div>
-                              <div className="truncate">{appointment.location}</div>
-                              <div className="truncate">
-                                {appointment.patient.firstname} {appointment.patient.lastname}
+                              <div className="text-gray-600 text-[10px] space-y-0.5">
+                                <div className="flex items-center gap-1">
+                                  <span>{appointment.category.icon}</span>
+                                  <span className="truncate">{appointment.category.label}</span>
+                                </div>
+                                <div className="truncate">
+                                  {new Date(appointment.start).toLocaleTimeString('de-DE', {
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                  })} - {new Date(appointment.end).toLocaleTimeString('de-DE', {
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                  })}
+                                </div>
+                                <div className="truncate">{appointment.location}</div>
+                                <div className="truncate">
+                                  {appointment.patient.firstname} {appointment.patient.lastname}
+                                </div>
                               </div>
                             </div>
                           </div>
-                        </div>
+                        </AppointmentHoverCard>
                       </div>
                     );
                   })}
