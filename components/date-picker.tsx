@@ -10,10 +10,11 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
+import { useAppointments } from "@/lib/context/appointments-context"
 
 export default function DatePicker() {
   const [open, setOpen] = React.useState(false)
-  const [date, setDate] = React.useState<Date | undefined>(new Date(2025, 5, 10)) // 10 Juni 2025
+  const { selectedDate, setSelectedDate } = useAppointments()
 
   // Format date in German
   const formatGermanDate = (date: Date) => {
@@ -34,16 +35,18 @@ export default function DatePicker() {
             className="w-48 justify-start font-normal"
           >
             <CalendarIcon />
-            {date ? formatGermanDate(date) : "Datum auswählen"}
+            {selectedDate ? formatGermanDate(selectedDate) : "Datum auswählen"}
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-auto overflow-hidden p-0" align="start">
           <Calendar
             mode="single"
-            selected={date}
+            selected={selectedDate}
             captionLayout="dropdown"
             onSelect={(date) => {
-              setDate(date)
+              if (date) {
+                setSelectedDate(date)
+              }
               setOpen(false)
             }}
           />
