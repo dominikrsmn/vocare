@@ -96,7 +96,7 @@ export function FilterMenu({ onClose }: FilterMenuProps) {
         </form>
         {filters.searchTerm && (
           <Badge variant="secondary" className="text-xs">
-            Suche: "{filters.searchTerm}"
+            Suche: &quot;{filters.searchTerm}&quot;
             <Button
               variant="ghost"
               size="sm"

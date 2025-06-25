@@ -48,11 +48,9 @@ export function AppointmentsProvider({ children }: AppointmentsProviderProps) {
   const [loadingPast, setLoadingPast] = useState(false);
   const [filters, setFiltersState] = useState<AppointmentFilters>(defaultFilters);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date(2025, 5, 10)); // Statisches Datum für SSR
-  const [isClientSide, setIsClientSide] = useState(false);
 
   // Hydration-Problem vermeiden: Setze heutiges Datum erst nach Client-Render
   useEffect(() => {
-    setIsClientSide(true);
     setSelectedDate(new Date()); // Jetzt auf heutiges Datum setzen
   }, []);
 

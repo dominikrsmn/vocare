@@ -1,8 +1,9 @@
 "use client";
 import { useAppointments } from "@/lib/context/appointments-context";
-import { AppointmentCard } from "@/components/appointment-card";
+
 import { AppointmentHoverCard } from "@/components/appointment-hover-card";
 import { useState, useMemo, useEffect } from "react";
+import { Appointment } from "@/components/appointment-card";
 
 
 
@@ -55,7 +56,7 @@ export default function Woche() {
   }, [filteredAppointments, weekDays]);
 
   // Terminposition berechnen
-  const getAppointmentPosition = (appointment: any) => {
+  const getAppointmentPosition = (appointment: Appointment) => {
     const start = new Date(appointment.start);
     const end = new Date(appointment.end);
     const startHour = start.getHours() + start.getMinutes() / 60;
@@ -106,7 +107,6 @@ export default function Woche() {
 
   // Prüfe ob heute in der aktuellen Woche ist
   const isTodayInCurrentWeek = useMemo(() => {
-    const today = new Date();
     return weekDays.some(day => isToday(day));
   }, [weekDays]);
 
@@ -162,7 +162,7 @@ export default function Woche() {
           <div className="grid grid-cols-8 overflow-y-auto">
             {/* Zeitslots */}
             <div className="border-r bg-gray-50">
-              {timeSlots.map((time, index) => (
+              {timeSlots.map((time) => (
                 <div key={time} className="h-24 border-b flex items-start p-2">
                   <span className="text-xs text-gray-500 font-medium">{time}</span>
                 </div>

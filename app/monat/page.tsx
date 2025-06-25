@@ -29,7 +29,7 @@ export default function Monat() {
     
     // Erster Tag des Monats
     const firstDayOfMonth = new Date(year, month, 1);
-    const lastDayOfMonth = new Date(year, month + 1, 0);
+
     
     // Wochentag des ersten Tages (0 = Sonntag, 1 = Montag, etc.)
     // Konvertiere zu Montag = 0

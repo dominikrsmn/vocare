@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Plus, X, CalendarIcon, Clock, MapPin, User } from "lucide-react";
+import { Plus, X, Clock, User } from "lucide-react";
 import { useAppointments } from "@/lib/context/appointments-context";
 import { createAppointment, getCategories, getPatients } from "@/lib/supabase/actions/appointments";
 import { Category, Patient } from "@/components/appointment-card";
@@ -14,7 +14,7 @@ interface CreateAppointmentFormProps {
 }
 
 export function CreateAppointmentForm({ onClose }: CreateAppointmentFormProps) {
-  const { addAppointment, refreshAppointments } = useAppointments();
+  const { addAppointment } = useAppointments();
   
   // Form State
   const [formData, setFormData] = useState({

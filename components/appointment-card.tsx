@@ -37,7 +37,7 @@ export interface Appointment {
   end: string;
   location: string;
   patient: Patient;
-  attachments: any[];
+  attachments: string[];
   category: Category;
   notes: string;
   title: string;
@@ -60,13 +60,7 @@ export function AppointmentCard({ appointment }: AppointmentCardProps) {
     minute: "2-digit",
   });
 
-  // Formatiere Datum
-  const date = new Date(appointment.start).toLocaleDateString("de-DE", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
+
 
   return (
     <AppointmentHoverCard appointment={appointment}>
