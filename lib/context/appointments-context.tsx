@@ -18,6 +18,8 @@ interface AppointmentsContextType {
   isLoading: boolean;
   loadingPast: boolean;
   filters: AppointmentFilters;
+  selectedDate: Date;
+  setSelectedDate: (date: Date) => void;
   loadPastAppointments: () => Promise<void>;
   refreshAppointments: () => Promise<void>;
   addAppointment: (appointment: Appointment) => void;
@@ -45,6 +47,14 @@ export function AppointmentsProvider({ children }: AppointmentsProviderProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [loadingPast, setLoadingPast] = useState(false);
   const [filters, setFiltersState] = useState<AppointmentFilters>(defaultFilters);
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date(2025, 5, 10)); // Statisches Datum für SSR
+  const [isClientSide, setIsClientSide] = useState(false);
+
+  // Hydration-Problem vermeiden: Setze heutiges Datum erst nach Client-Render
+  useEffect(() => {
+    setIsClientSide(true);
+    setSelectedDate(new Date()); // Jetzt auf heutiges Datum setzen
+  }, []);
 
   // Initiales Laden der Termine
   useEffect(() => {
@@ -189,6 +199,8 @@ export function AppointmentsProvider({ children }: AppointmentsProviderProps) {
     isLoading,
     loadingPast,
     filters,
+    selectedDate,
+    setSelectedDate,
     loadPastAppointments,
     refreshAppointments,
     addAppointment,
